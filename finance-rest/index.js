@@ -2,6 +2,10 @@ const express = require('express');
 const app = express();
 const config = require('./config.js');
 const request = require('request');
+const fs = require('fs');
+const path = require('path');
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.send('API Finances!');
@@ -17,18 +21,31 @@ app.get('/ticker=:id', (req, res) => {
         url: url,
         json: true,
         headers: {'User-Agent': 'request'}
-    }, (err, res, data) => {
-        if (err) {
-        console.log('Error:', err);
-        } else if (res.statusCode !== 200) {
-        console.log('Status:', res.statusCode);
-        } else {
-        // data is successfully parsed as a JSON object:
-        console.log(data);
-        }
+    }, (err, response, data) => {
+      if (err || response.statusCode !== 200) {
+        return res.status(500).send('Error occurred while fetching data');
+      }
+      fs.writeFile(`${tickerId}.json`, JSON.stringify(data), (err) => {
+        if (err) return res.status(500).send('Error writing file');
+        // res.json(data);
+        res.redirect(`/view?ticker=${tickerId}`);
     });
-    res.send(`Données pour le ticker: ${data}`);
+  })
+})
 
+app.get('/view', (req, res) => {
+  res.sendFile(path.join(__dirname, '/public/index.html'));
+});
+
+app.get('/data/:ticker', (req, res) => {
+  const ticker = req.params.ticker;
+  const filePath = path.join(__dirname, `${ticker}.json`);
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      return res.status(404).send('Data not found');
+    }
+    res.json(JSON.parse(data));
+  })
 })
 
 app.listen(config.port, () => {
