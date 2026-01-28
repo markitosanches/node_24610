@@ -1,35 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Header from './components/Header'
+import ManyTasks from './components/ManyTasks'
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+function App(){
+  const tasks = [
+    {
+        "id": 1,
+        "text": "Buy groceries",
+        "day": "2023-12-12 16:30:00",
+        "reminder": true
+    },
+    {
+        "id": 2,
+        "text": "Exercise for 30 minutes",
+        "day": "2023-12-19 08:15:00",
+        "reminder": true
+    },
+    {
+        "id": 3,
+        "text": "Read a book",
+        "day": "2024-01-01 00:01:00",
+        "reminder": false
+    },
+    {
+        "id": 4,
+        "text": "Write in a journal",
+        "day": "2024-01-16 12:45:00",
+        "reminder": false
+    }
+    
+]
+return(
+    <div className="font-sans min-h-screen">
+      <div className="container mx-auto p-8 border-2 border-blue-200 mt-16 max-w-screen-md rounded-lg">
+        <Header/>
+        <ManyTasks tasks={tasks}/>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
-
 export default App
