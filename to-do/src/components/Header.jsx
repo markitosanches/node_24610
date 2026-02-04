@@ -1,12 +1,18 @@
 import Button from './Button'
-const Header = ({title = "To Do List"}) => {
-    const onClick = () => {
-        console.log('Click !')
-    }
+import { useLocation } from 'react-router-dom'
+const Header = ({title = "To Do List", toggleForm, showAdd}) => {
+    // const onClick = () => {
+    //     console.log('Click !')
+    // }
+    const location = useLocation()
     return(
         <header className="flex justify-between items-center mb-8">
             <h1 className="text-2xl">{title}</h1>
-            <Button text='Add' onClick={onClick} color='btn-green'/>
+            {location.pathname === '/'  && (
+                <Button text={showAdd ? `Close` : `Add`} onClick={toggleForm} color={showAdd ? `btn-red` : `btn-green`}/>
+            )}
+            
+        
         </header>
     )
 }
