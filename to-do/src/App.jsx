@@ -3,6 +3,7 @@ import ManyTasks from './components/ManyTasks'
 import AddTask from './components/AddTask'
 import Footer from './components/Footer'
 import About from './components/About'
+import Task from './components/Task'
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
@@ -70,8 +71,7 @@ return(
           <Routes>
             <Route path='/' element={<ManyTasks tasks={tasks} onDelete={deleteTask}  onToggle={toggleReminder}/>}/>
             <Route path='/about' element={<About setShowAddTask={setShowAddTask}/>}/>
-            
-            
+            <Route path='/task/:id' element={<Task setShowAddTask={setShowAddTask}/>}/>
           </Routes>
           <Footer/>
         </div>
