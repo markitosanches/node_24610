@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component, Props & Loops</title>
+    <style>
+        input{
+            display: block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+      <login-form/>
+    </div>
+
+    <script src="https://unpkg.com/vue@3"></script>
+    <script>
+        let app = Vue.createApp({
+
+        })
+        app.component('login-form', {
+            template:`
+            <h1>{{ title }}</h1>
+            <form @submit.prevent="handleSubmit">
+                <custom-input
+                v-for="(input, i) in inputs"
+                :key="i"
+                :label="input.label"
+                :type="input.type"
+                :placeHolder="input.placeHolder"
+                v-model="input.value"
+                />
+                <button>Login</button>
+            </form>
+            `,
+            data(){
+                return{
+                    title: 'Login Title',
+                    inputs: [
+                        { 
+                            label: 'Name',
+                            type: 'text',
+                            value:'',
+                            placeHolder: 'Insert your name'
+                        },
+                        { 
+                            label: 'Username',
+                            type: 'email',
+                            value:'',
+                            placeHolder: 'Insert your email'
+                        },
+                        { 
+                            label: 'Password',
+                            type: 'password',
+                            value:'',
+                            placeHolder: 'Must have 6 caracteres'
+                        },
+                        { 
+                            label: 'Phone',
+                            type: 'text',
+                            value:'',
+                            placeHolder: 'Insert your phone'
+                        }
+                    ]
+
+                }
+            },
+            methods:{
+                handleSubmit(){
+                    console.log(this.inputs[1].value, this.inputs[2].value)
+                }
+            }
+        })
+        app.component('custom-input',{
+            template:`
+            <label>{{ label }}
+                    <input :type="type" v-model="inputValue" :placeHolder='placeHolder'>
+            </label>
+            `,
+            props: ['label', 'type', 'modelValue', 'placeHolder'],
+            computed: {
+                inputValue:{
+                    get(){
+                        return this.modelValue
+                    },
+                    set(value){
+                        this.$emit('update:modelValue', value)
+                    }
+                }
+            }
+        })
+        app.mount('#app')
+    </script>
+</body>
+</html>
