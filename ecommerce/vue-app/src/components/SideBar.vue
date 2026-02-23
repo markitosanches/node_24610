@@ -22,22 +22,22 @@
                     </thead>
                     <tbody>
                         <tr class="my-2" v-for="(quantity, key,  i) in cart" :key="i">
-                            <td><img src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg" alt="..." class="max-w-[100px] max-h-[100px] my-2" /></td>
+                            <td><img :src="getPhoto(key)" :alt="key" class="max-w-[100px] max-h-[100px] my-2" /></td>
                             <td>{{ key }}</td>
-                            <td>$99.00</td>
+                            <td>$ {{ getPrice(key) }}</td>
                             <td class="text-center">{{ quantity }}</td>
-                            <td>$99.00</td>
+                            <td>${{(quantity * getPrice(key)).toFixed(2) }}</td>
                             <td class="text-center">
-                                <button class="text-red-600 px-7 text-lg font-bold">
+                                <button @click="remove(key)" class="text-red-600 px-7 text-lg font-bold cursor-pointer">
                                     &times;
                                 </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <p class="text-center"><em>No items in cart</em></p>
+                <p v-if="!Object.keys(cart).length" class="text-center"><em>No items in cart</em></p>
                 <div class="flex justify-between mt-3">
-                    <span><strong>Total:</strong> $1.00</span>
+                    <span><strong>Total:</strong> $ {{ calculateTotal() }}</span>
                     <button type="button" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Checkout</button>
                 </div>
             </div>
@@ -47,6 +47,27 @@
 
 <script>
 export default {
-    props: ['toggle', 'cart']
+    props: ['toggle', 'cart', 'inventory', 'remove'],
+    methods: {
+        getPrice (name) {
+            const product = this.inventory.find((p) => {
+                return p.name === name
+            })
+            return product.price.toFixed(2)
+        },
+        getPhoto (name) {
+            const product = this.inventory.find((p) => {
+                return p.name === name
+            })
+            return product.photo
+        },
+        calculateTotal () {
+            const total = Object.entries(this.cart).reduce((acc, curr) => {
+                return acc + (curr[1] * this.getPrice(curr[0]))
+            }, 0)
+            return total.toFixed(2)
+        }
+
+    }
 }
 </script>
