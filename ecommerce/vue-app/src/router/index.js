@@ -5,19 +5,39 @@ import ProductView from '../views/ProductView.vue'
 import EditProductView from '../views/EditProductView.vue'
 import UserView from '../views/UserView.vue'
 import LoginView from '../views/LoginView.vue'
+import { useAuthStore } from '../stores/auth'
 
 const routes = [
     {path: '/', name: 'home', component: Home},
-    {path: '/add-product', name: 'add-product', component: AddProductView},
+    {path: '/add-product', name: 'add-product', component: AddProductView, meta: {requiresAuth:true}},
     {path: '/product/:id', name: 'product', component: ProductView},
-    {path: '/edit-product/:id', name: 'edit-product', component: EditProductView},
-    {path: '/user', name: 'user', component: UserView},
+    {path: '/edit-product/:id', name: 'edit-product', component: EditProductView, meta: {requiresAuth:true}},
+    {path: '/user', name: 'user', component: UserView, meta: {requiresAuth:true}},
     {path: '/login', name: 'login', component: LoginView}
 ]
 
 const router = createRouter({
     history: createWebHistory(),
     routes
+})
+
+router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore()
+    const token = localStorage.getItem('token')
+    
+    if(token && !authStore.user ){
+       authStore.setUser({ token }) 
+    }
+    
+    if(to.meta.requiresAuth && !authStore.user){
+        next({name: 'login'})
+    }else{
+        next()
+    }
+
+    // if(to.name === 'login' && token){
+    //     next({name: 'home'})
+    // }
 })
 
 export default router

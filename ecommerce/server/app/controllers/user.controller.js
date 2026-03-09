@@ -54,5 +54,51 @@ exports.findOne = async (req, res) => {
     return
    }
 
-   res.send(user)
+   const token  = jwt.sign({id: user.id}, 'secret')
+
+   res.cookie('jwt', token, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 10000
+   })
+
+   user.update({
+     token: token
+   })
+
+   const {password, ...data} = await user.toJSON()
+   res.send({
+    user:data
+   })
+
 }
+
+exports.logout = async (req, res) => {
+    res.cookie('jwt', '', {maxAge:0})
+
+    res.send({
+        message: 'success'
+    })
+}
+
+exports.auth = async (req, res) =>{
+    try{
+        const cookie = req.cookies['jwt']
+        const claims = jwt.verify(cookie, 'secret')
+
+        if(!claims) {
+            return res.status(401).send({
+                message: 'unauthenticated'
+            })
+        }
+        const user = await User.findOne({where: {id: claims.id}})
+        const {password, ...data} = await user.toJSON()
+        res.send(data)
+    }
+    catch (e){
+        return res.status(401).send({
+            message: 'unauthenticated'
+        })
+    }
+
+}
+ 
